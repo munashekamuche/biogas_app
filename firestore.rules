@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return signedIn() && userDoc().role == 'admin';
+    }
+
+    function isOffice() {
+      return signedIn() && userDoc().role == 'office';
+    }
+
+    function myOfficeId() {
+      return userDoc().officeId;
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (
+        isAdmin()
+        || request.auth.uid == userId
+        || (isOffice() && resource.data.officeId == myOfficeId())
+      );
+      allow create: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow update: if isAdmin() || request.auth.uid == userId;
+      allow delete: if isAdmin();
+    }
+
+    match /offices/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /applications/{id} {
+      allow read: if signedIn() && (
+        isAdmin()
+        || resource.data.userId == request.auth.uid
+        || (isOffice() && resource.data.officeId == myOfficeId())
+      );
+      allow create: if signedIn() && (
+        request.resource.data.userId == request.auth.uid
+        || isAdmin()
+      );
+      allow update: if isAdmin() || (isOffice() && resource.data.officeId == myOfficeId());
+      allow delete: if isAdmin();
+    }
+
+    match /reports/{id} {
+      allow read: if signedIn() && (
+        isAdmin()
+        || resource.data.userId == request.auth.uid
+        || (isOffice() && resource.data.officeId == myOfficeId())
+      );
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    match /notifications/{id} {
+      allow read: if signedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow write: if signedIn() && (isAdmin() || request.resource.data.userId == request.auth.uid);
+    }
+
+    match /form_configs/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

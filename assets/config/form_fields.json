@@ -1,0 +1,165 @@
+{
+  "grid_solar": {
+    "sections": [
+      {
+        "title": "APPLICANT AND PREMISES DETAILS",
+        "fields": [
+          {
+            "label": "TO:",
+            "key": "recipient",
+            "type": "text",
+            "required": false,
+            "placeholder": "Recipient name or department"
+          },
+          {
+            "label": "Full Name",
+            "key": "fullName",
+            "type": "text",
+            "required": true,
+            "placeholder": "Enter your full name in block letters",
+            "multiline": true
+          },
+          {
+            "label": "Province",
+            "key": "province",
+            "type": "text",
+            "required": true,
+            "placeholder": "Enter province"
+          },
+          {
+            "label": "District",
+            "key": "district",
+            "type": "text",
+            "required": true,
+            "placeholder": "Enter district"
+          },
+          {
+            "label": "Project Name",
+            "key": "projectName",
+            "type": "text",
+            "required": true,
+            "placeholder": "Enter project name",
+            "multiline": true
+          }
+        ]
+      },
+      {
+        "title": "ELECTRICAL CONSUMING DEVICES",
+        "fields": [
+          {
+            "label": "Lighting Points No.",
+            "key": "lightingPoints",
+            "type": "number",
+            "required": true,
+            "placeholder": "Enter number of lighting points"
+          },
+          {
+            "label": "Plug Points No.",
+            "key": "plugPoints",
+            "type": "number",
+            "required": true,
+            "placeholder": "Enter number of plug points"
+          },
+          {
+            "label": "Stove Rating (Watts)",
+            "key": "stoveRating",
+            "type": "number",
+            "required": false,
+            "placeholder": "Enter stove rating in watts"
+          },
+          {
+            "label": "No. of Phases",
+            "key": "numberOfPhases",
+            "type": "number",
+            "required": true,
+            "placeholder": "Enter number of phases"
+          },
+          {
+            "label": "Voltage",
+            "key": "voltage",
+            "type": "number",
+            "required": true,
+            "placeholder": "Enter voltage"
+          }
+        ]
+      },
+      {
+        "title": "MOTOR AND RUNNING TIME",
+        "type": "motor_table",
+        "fields": []
+      },
+      {
+        "title": "OTHER ELECTRICAL APPLIANCES",
+        "fields": [
+          {
+            "label": "Other Electrical Appliances",
+            "key": "otherAppliances",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "List any other electrical appliances",
+            "multiline": true
+          }
+        ]
+      },
+      {
+        "title": "SIGNATURE AND ADDRESS",
+        "fields": [
+          {
+            "label": "Date",
+            "key": "applicationDate",
+            "type": "date",
+            "required": true
+          },
+          {
+            "label": "Signature",
+            "key": "signature",
+            "type": "text",
+            "required": true,
+            "placeholder": "Your signature"
+          },
+          {
+            "label": "Postal Address",
+            "key": "postalAddress",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "Enter your complete postal address",
+            "multiline": true
+          }
+        ]
+      }
+    ]
+  },
+  "biogas": {
+    "fields": [
+      {
+        "label": "Full Name",
+        "key": "fullName",
+        "type": "text",
+        "required": true,
+        "placeholder": "Enter your full name"
+      },
+      {
+        "label": "Address",
+        "key": "address",
+        "type": "text",
+        "required": true,
+        "placeholder": "Enter your address"
+      },
+      {
+        "label": "Location",
+        "key": "location",
+        "type": "text",
+        "required": true,
+        "placeholder": "Enter your location"
+      },
+      {
+        "label": "Additional Information",
+        "key": "additionalInfo",
+        "type": "textarea",
+        "required": false,
+        "placeholder": "Any additional information..."
+      }
+    ]
+  }
+}
+
