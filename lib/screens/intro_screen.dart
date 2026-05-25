@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../utils/app_router.dart';
@@ -28,134 +29,128 @@ class IntroScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(24.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: 24.h),
-                // Logo
-                Center(
-                  child: Container(
-                    padding: EdgeInsets.all(20.w),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 20,
-                          offset: const Offset(0, 6),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final logoSize = kIsWeb ? 72.0 : 90.w;
+
+              return SingleChildScrollView(
+                padding: EdgeInsets.all(kIsWeb ? 24 : 24.w),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Container(
+                          padding: EdgeInsets.all(kIsWeb ? 16 : 20.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 20,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(100.r),
+                            child: Image.asset(
+                              'assets/logo/company_logo.png',
+                              height: logoSize,
+                              width: logoSize,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100.r),
-                      child: Image.asset(
-                        'assets/logo/company_logo.png',
-                        height: 90.h,
-                        width: 90.w,
-                        fit: BoxFit.contain,
                       ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 32.h),
-
-                // Title
-                Text(
-                  'REA Service Application',
-                  style: TextStyle(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
-                    letterSpacing: 0.8,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  'Rural Electrification Fund & Installation Services',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: AppTheme.textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 32.h),
-
-                // Description cards
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        _buildIntroCard(
-                          title: 'Grid Electrification',
-                          description:
-                              'Request connections to the national grid for homesteads and institutions, managed through the Rural Electrification Fund.',
-                          icon: Icons.electric_bolt_outlined,
-                          color: AppTheme.accentBlue,
+                      SizedBox(height: kIsWeb ? 20 : 32.h),
+                      Text(
+                        'REA Service Application',
+                        style: TextStyle(
+                          fontSize: kIsWeb ? 22 : 26.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary,
+                          letterSpacing: 0.8,
                         ),
-                        SizedBox(height: 16.h),
-                        _buildIntroCard(
-                          title: 'Solar Energy Solutions',
-                          description:
-                              'Get clean, reliable solar installations for homes and institutions, tailored to your energy needs.',
-                          icon: Icons.solar_power,
-                          color: AppTheme.accentOrange,
-                        ),
-                        SizedBox(height: 16.h),
-                        _buildIntroCard(
-                          title: 'Biogas Energy Systems',
-                          description:
-                              'Apply for biogas digesters that convert waste into clean cooking and lighting energy.',
-                          icon: Icons.eco_outlined,
-                          color: AppTheme.primaryGreen,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 16.h),
-
-                // Get started button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(
-                        context,
-                        AppRouter.login,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                    child: Text(
-                      'Get Started',
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w600,
+                      SizedBox(height: kIsWeb ? 6 : 8.h),
+                      Text(
+                        'Rural Electrification Fund & Installation Services',
+                        style: TextStyle(
+                          fontSize: kIsWeb ? 14 : 16.sp,
+                          color: AppTheme.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    ),
+                      SizedBox(height: kIsWeb ? 20 : 32.h),
+                      _buildIntroCard(
+                        title: 'Grid Electrification',
+                        description:
+                            'Request connections to the national grid for homesteads and institutions, managed through the Rural Electrification Fund.',
+                        icon: Icons.electric_bolt_outlined,
+                        color: AppTheme.accentBlue,
+                      ),
+                      SizedBox(height: kIsWeb ? 12 : 16.h),
+                      _buildIntroCard(
+                        title: 'Solar Energy Solutions',
+                        description:
+                            'Get clean, reliable solar installations for homes and institutions, tailored to your energy needs.',
+                        icon: Icons.solar_power,
+                        color: AppTheme.accentOrange,
+                      ),
+                      SizedBox(height: kIsWeb ? 12 : 16.h),
+                      _buildIntroCard(
+                        title: 'Biogas Energy Systems',
+                        description:
+                            'Apply for biogas digesters that convert waste into clean cooking and lighting energy.',
+                        icon: Icons.eco_outlined,
+                        color: AppTheme.primaryGreen,
+                      ),
+                      SizedBox(height: kIsWeb ? 20 : 16.h),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(
+                              context,
+                              AppRouter.login,
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              vertical: kIsWeb ? 14 : 16.h,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                          ),
+                          child: Text(
+                            'Get Started',
+                            style: TextStyle(
+                              fontSize: kIsWeb ? 16 : 18.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: kIsWeb ? 8 : 8.h),
+                      Text(
+                        'You can access this information any time from the Help or About sections in future versions.',
+                        style: TextStyle(
+                          fontSize: kIsWeb ? 11 : 12.sp,
+                          color: AppTheme.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(height: 8.h),
-                Text(
-                  'You can access this information any time from the Help or About sections in future versions.',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: AppTheme.textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 8.h),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),

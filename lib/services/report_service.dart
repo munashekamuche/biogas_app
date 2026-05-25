@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import '../models/report_model.dart';
+import '../utils/platform_connectivity.dart';
 import 'sync_service.dart';
 
 class ReportService {
@@ -11,9 +11,7 @@ class ReportService {
     String? userId,
     String? officeId,
   }) async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult == ConnectivityResult.none) {
+    if (await isDeviceOffline()) {
       return await _syncService.getLocalReports(
         userId: userId,
         officeId: officeId,
@@ -36,24 +34,26 @@ class ReportService {
       reports = reports.where((r) => r.officeId == officeId).toList();
     }
 
-    for (var report in reports) {
-      await _syncService.syncReportToLocal(report);
+    if (usesLocalDatabase) {
+      for (var report in reports) {
+        await _syncService.syncReportToLocal(report);
+      }
     }
 
     return reports;
   }
 
   Future<void> submitReport(ReportModel report) async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult == ConnectivityResult.none) {
+    if (await isDeviceOffline()) {
       await _syncService.saveReportOffline(report);
     } else {
       await _firestore
           .collection('reports')
           .doc(report.id)
           .set(report.toFirestore());
-      await _syncService.syncReportToLocal(report);
+      if (usesLocalDatabase) {
+        await _syncService.syncReportToLocal(report);
+      }
     }
   }
 

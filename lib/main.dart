@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'database/isar_service.dart';
-import 'models/isar_models.dart';
+import 'database/database_init.dart';
 import 'providers/auth_provider.dart';
 import 'providers/app_provider.dart';
 import 'providers/user_provider.dart';
@@ -15,33 +12,32 @@ import 'providers/notification_provider.dart';
 import 'screens/splash_screen.dart';
 import 'utils/app_router.dart';
 import 'utils/theme.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'utils/firebase_bootstrap.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Firebase with error handling
+
   try {
-    await Firebase.initializeApp();
+    await initializeFirebase();
   } catch (e) {
     debugPrint('Firebase initialization error: $e');
-    // Continue anyway - app can work offline
+    if (kIsWeb) {
+      debugPrint(
+        'Web requires a Firebase Web app. In Firebase Console → Project settings → '
+        'add a Web app, then run: dart pub global run flutterfire_cli:flutterfire configure',
+      );
+    }
   }
-  
-  // Initialize Isar database with error handling
-  try {
-    final dir = await getApplicationDocumentsDirectory();
-    final isar = await Isar.open(
-      [IsarUserSchema, IsarApplicationSchema, IsarReportSchema],
-      directory: dir.path,
-    );
-    IsarService.instance = IsarService(isar);
-  } catch (e) {
-    debugPrint('Isar initialization error: $e');
-    // This is critical - app needs database
-    rethrow;
+
+  if (!kIsWeb) {
+    try {
+      await initLocalDatabase();
+    } catch (e) {
+      debugPrint('Isar initialization error: $e');
+      rethrow;
+    }
   }
-  
+
   runApp(const MyApp());
 }
 
@@ -92,4 +88,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

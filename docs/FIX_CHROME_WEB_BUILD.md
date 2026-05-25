@@ -66,12 +66,9 @@ await Firebase.initializeApp(
 flutter run -d chrome
 ```
 
-## If build passes Firebase but fails on Isar / `isar_models.g.dart`
+## Isar / web (fixed in codebase)
 
-**Isar does not support Flutter Web** (uses `dart:ffi`). A full Chrome build also needs:
-
-1. `dart run build_runner build --delete-conflicting-outputs` (generates `isar_models.g.dart`; required on every clone).
-2. A **web-specific code path** (skip Isar on `kIsWeb`, use Firestore only) — not finished in this repo yet. Until then, prefer **Android** (`flutter run`) or desktop for full offline sync.
+Web builds **skip Isar** and use **Firestore only** via conditional imports (`database_init.dart`, `sync_service.dart`). Mobile keeps Isar for offline use. See `docs/WEB_AND_MOBILE_SYNC.md`.
 
 The partner’s original `dartify` / `jsify` error is **only** the old `firebase_storage_web` package; pull + `flutter pub get` fixes that part.
 

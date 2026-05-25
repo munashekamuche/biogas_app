@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -100,9 +101,11 @@ class AuthProvider extends ChangeNotifier {
     // If we have a userId, proceed with loading user data
     if (userId != null) {
       try {
-        // Try to load from local database first (offline support)
+        // Try to load from local database first (offline support, mobile only)
         try {
-          final localUser = await _syncService.getUserFromLocal(userId);
+          final localUser = kIsWeb
+              ? null
+              : await _syncService.getUserFromLocal(userId);
           if (localUser != null) {
             debugPrint('Loaded user from local database');
             _currentUser = localUser;

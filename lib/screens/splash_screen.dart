@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/auth_provider.dart';
+import '../services/application_service.dart';
+import '../services/report_service.dart';
 import '../utils/app_router.dart';
 import '../utils/theme.dart';
 
@@ -69,6 +72,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       await authProvider.loadUser();
+
+      if (!kIsWeb) {
+        try {
+          await ApplicationService().syncPendingApplications();
+          await ReportService().syncPendingReports();
+        } catch (e) {
+          debugPrint('Pending sync on startup: $e');
+        }
+      }
       
       if (!mounted) return;
       
@@ -122,91 +134,113 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   ],
           ),
         ),
-        child: Center(
-          child: AnimatedBuilder(
-            animation: _animationController,
-            builder: (context, child) {
-              return Opacity(
-                opacity: _fadeAnimation.value,
-                child: Transform.scale(
-                  scale: _scaleAnimation.value,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Logo Container with Shadow
-                      Container(
-                        padding: EdgeInsets.all(32.w),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 20,
-                              spreadRadius: 5,
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final logoSize = kIsWeb ? 96.0 : 120.w;
+              final logoPadding = kIsWeb ? 24.0 : 32.w;
+
+              return Center(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 24.w,
+                    vertical: 16.h,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - 32,
+                    ),
+                    child: AnimatedBuilder(
+                      animation: _animationController,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _fadeAnimation.value,
+                          child: Transform.scale(
+                            scale: _scaleAnimation.value,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(logoPadding),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.2),
+                                        blurRadius: 20,
+                                        spreadRadius: 5,
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(100.r),
+                                    child: Image.asset(
+                                      'assets/logo/company_logo.png',
+                                      height: logoSize,
+                                      width: logoSize,
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          height: logoSize,
+                                          width: logoSize,
+                                          decoration: BoxDecoration(
+                                            color: AppTheme.primaryGreen
+                                                .withOpacity(0.1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            Icons.eco,
+                                            size: kIsWeb ? 48.0 : 60.sp,
+                                            color: AppTheme.primaryGreen,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: kIsWeb ? 24 : 40.h),
+                                Text(
+                                  'REA Service Application',
+                                  style: TextStyle(
+                                    fontSize: kIsWeb ? 24 : 28.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    letterSpacing: 1.2,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: kIsWeb ? 8 : 8.h),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 8.w),
+                                  child: Text(
+                                    'Rural Electrification Fund & Installation Services',
+                                    style: TextStyle(
+                                      fontSize: kIsWeb ? 14 : 16.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white.withOpacity(0.9),
+                                      letterSpacing: 0.8,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                SizedBox(height: kIsWeb ? 32 : 48.h),
+                                SizedBox(
+                                  width: kIsWeb ? 36 : 40.w,
+                                  height: kIsWeb ? 36 : 40.h,
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 3,
+                                    valueColor:
+                                        AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100.r),
-                          child: Image.asset(
-                            'assets/logo/company_logo.png',
-                            height: 120.h,
-                            width: 120.w,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                height: 120.h,
-                                width: 120.w,
-                                decoration: BoxDecoration(
-                                  color: AppTheme.primaryGreen.withOpacity(0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.eco,
-                                  size: 60.sp,
-                                  color: AppTheme.primaryGreen,
-                                ),
-                              );
-                            },
                           ),
-                        ),
-                      ),
-                      SizedBox(height: 40.h),
-                      
-                      // App Name
-                      Text(
-                        'REA Service Application',
-                        style: TextStyle(
-                          fontSize: 28.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        'Rural Electrification Fund & Installation Services',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white.withOpacity(0.9),
-                          letterSpacing: 0.8,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 48.h),
-                      
-                      // Loading Indicator
-                      SizedBox(
-                        width: 40.w,
-                        height: 40.h,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      ),
-                    ],
+                        );
+                      },
+                    ),
                   ),
                 ),
               );
