@@ -74,12 +74,13 @@ class MyApp extends StatelessWidget {
                 home: const SplashScreen(),
                 onGenerateRoute: AppRouter.generateRoute,
                 builder: (context, child) {
-                  if (!kIsWeb || child == null) return child;
+                  final content = child ?? const SizedBox.shrink();
+                  if (!kIsWeb) return content;
                   return Align(
                     alignment: Alignment.topCenter,
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 1200),
-                      child: child,
+                      child: content,
                     ),
                   );
                 },
