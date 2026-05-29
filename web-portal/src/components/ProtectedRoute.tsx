@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { LoadingScreen } from './ui/LoadingScreen';
 import type { UserRole } from '../types';
 
 export function ProtectedRoute({
@@ -12,7 +13,7 @@ export function ProtectedRoute({
   const { profile, loading } = useAuth();
 
   if (loading) {
-    return <div className="center-page">Loading…</div>;
+    return <LoadingScreen />;
   }
   if (!profile) {
     return <Navigate to="/login" replace />;
