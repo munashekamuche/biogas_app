@@ -49,6 +49,12 @@ app.*.map.json
 **/google-services.json
 **/GoogleService-Info.plist
 
+# React web portal
+web-portal/node_modules/
+web-portal/dist/
+web-portal/.env
+web-portal/.env.local
+
 # Isar generated files
 *.g.dart
 lib/models/isar_models.g.dart

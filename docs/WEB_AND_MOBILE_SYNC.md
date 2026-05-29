@@ -1,70 +1,63 @@
 # Web portal + mobile app — shared data
 
-## How they connect
+## Architecture (two apps, one backend)
 
-Both **Flutter Web** (office/admin portal in the browser) and **Android/iOS** use the **same Firebase project** (`bgasapp`):
+| App | Folder | Users | Tech |
+|-----|--------|-------|------|
+| **Mobile** | repo root (`flutter run`) | Client, staff | Flutter + Isar offline + Firebase |
+| **Web portal** | `web-portal/` | Office, admin | React + Vite + Firebase |
 
-| Layer | Web | Mobile |
-|--------|-----|--------|
-| Auth | Firebase Auth | Firebase Auth |
-| Data | Cloud Firestore (live) | Firestore + Isar cache offline |
-| Files | Firebase Storage | Firebase Storage |
+Both use Firebase project **`bgasapp`** and the same Firestore collections:
 
-When a **client submits an application on mobile**, it is written to Firestore. An **office user on the web** sees it immediately via Firestore queries/listeners. When **staff updates status on web**, the **client mobile app** sees the change on next load or realtime listener.
+- `users`, `applications`, `reports`, `offices`
 
-## Run web portal
+When a **client submits on mobile**, an **office user in the React portal** sees it immediately. When **office/admin updates status on the web**, the **mobile app** sees the change on refresh or live listeners.
+
+## Run web portal (office / admin)
 
 ```bash
+cd web-portal
+cp .env.example .env
+npm install
+npm run dev
+```
+
+Open http://localhost:5173 — sign in with `role: office` or `role: admin`.
+
+## Run mobile app (client / staff)
+
+```bash
+# from repo root
 flutter pub get
-dart run build_runner build --delete-conflicting-outputs   # mobile only; optional for web
-flutter run -d chrome
-```
-
-Production build:
-
-```bash
-flutter build web
-# Deploy build/web/ to Firebase Hosting, Netlify, or any static host
-```
-
-## Run mobile
-
-```bash
+dart run build_runner build --delete-conflicting-outputs
 flutter run
 ```
 
-Ensure `android/app/google-services.json` is present.
+## Firebase Web app
 
-## Firebase Web app (required once)
+1. Firebase Console → project **bgasapp** → add **Web** app if needed.
+2. Put config in `web-portal/.env` (see `web-portal/.env.example`).
+3. Deploy `firestore.rules` and `firestore.indexes.json` from repo root.
 
-1. [Firebase Console](https://console.firebase.google.com/) → project **bgasapp** → **Add app** → **Web**.
-2. Run:
+## Roles
+
+| Role | Use |
+|------|-----|
+| `client` | Mobile only |
+| `staff` | Mobile only |
+| `office` | **React portal** `/office` |
+| `admin` | **React portal** `/admin` |
+
+Create users in Firebase Auth + Firestore `users` with matching `role` and `officeId`.
+
+## Deploy web portal
 
 ```bash
-dart pub global activate flutterfire_cli
-dart pub global run flutterfire_cli:flutterfire configure --project=bgasapp
+cd web-portal
+npm run build
+# deploy dist/ to Firebase Hosting or static host
 ```
 
-This updates `lib/firebase_options.dart` with the correct **Web `appId`**.
+## Flutter web note
 
-## Roles on web
-
-| Role | Route | Use |
-|------|--------|-----|
-| `office` | `/office-dashboard` | Regional office portal |
-| `admin` | `/admin-dashboard` | National overview |
-| `staff` | `/staff-home` | Field staff (works on web too) |
-
-Create users in Firebase Auth + Firestore `users` collection with matching `role` and `officeId`.
-
-## Deploy Firestore rules
-
-Upload `firestore.rules` and `firestore.indexes.json` from the project root so office-scoped queries work.
-
-## Architecture
-
-```
-Mobile app ──writes──► Firestore ◄──reads/listens── Web portal
-     │                      ▲
-     └── Isar (offline)     └── same collections: users, applications, reports, offices
-```
+The Flutter project can still run in Chrome for testing, but **production office/admin access should use `web-portal`**, not Flutter web dashboards.
