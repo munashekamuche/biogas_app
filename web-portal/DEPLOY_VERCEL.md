@@ -6,10 +6,13 @@ Deploy **only** the React app in `web-portal/` — not the Flutter mobile projec
 
 1. [Vercel](https://vercel.com) → your project → **Settings** → **General**
 2. **Root Directory** → Edit → select **`web-portal`** → Save
-3. Framework should auto-detect **Vite**
-4. **Build Command:** `npm run build`
+3. Framework: **Vite** (or leave auto)
+4. **Build Command:** `npm run build` (must NOT be `cd web-portal && ...`)
 5. **Output Directory:** `dist`
-6. Redeploy
+6. **Override** any custom Install Command that contains `cd web-portal` — leave default or `npm install`
+7. Redeploy (uncheck build cache)
+
+**Important:** If Root Directory is `web-portal`, do not use install/build commands that `cd web-portal` again — that can hang or fail after `npm install`.
 
 ## Option B — Deploy whole repo
 

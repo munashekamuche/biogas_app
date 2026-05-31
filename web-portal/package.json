@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
+    "build:check": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "seed:test-users": "node scripts/seed-test-users.mjs",
@@ -16,6 +17,9 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.16.0"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

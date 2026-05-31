@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "cd web-portal && npm install",
-  "buildCommand": "cd web-portal && npm run build",
+  "installCommand": "npm install --prefix web-portal",
+  "buildCommand": "npm run build --prefix web-portal",
   "outputDirectory": "web-portal/dist",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
